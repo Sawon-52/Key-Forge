@@ -2,6 +2,8 @@
 
 **Key-Forge** is a high-performance, distraction-free web-based typing speed application inspired by popular platforms like Monkeytype. Built completely from scratch using modern frontend technologies, it offers a clean interface for developers and typists to test and improve their typing metrics in real-time.
 
+🔗 **Live Link:** [Try Key-Forge Here](https://key-forge-steel.vercel.app/)
+
 ---
 
 ## ✨ Features
