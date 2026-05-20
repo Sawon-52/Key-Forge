@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KeyForge — Typing Speed Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div id="app">
+      <!-- Header -->
+      <header style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem">
+        <div class="logo">Key<span>Forge</span></div>
+        <div style="display: flex; align-items: center; gap: 0.6rem">
+          <div class="source-badge" id="source-badge">
+            <div class="source-dot"></div>
+            <span id="source-label">loading…</span>
+          </div>
+          <div id="pb-badge" class="pb-badge hidden">★ PB &nbsp;<span id="pb-wpm-display">—</span> wpm</div>
+          <select id="theme-select" class="theme-select" aria-label="Choose theme">
+            <option value="ocean">Ocean</option>
+            <option value="solar">Solar</option>
+            <option value="forest">Forest</option>
+            <option value="violet">Violet</option>
+          </select>
+        </div>
+      </header>
+
+      <!-- Config Row -->
+      <div class="config-row">
+        <div style="display: flex; align-items: center">
+          <span class="group-label">time</span>
+          <div class="pill-group" id="time-group">
+            <button class="pill-btn" data-time="15">15s</button>
+            <button class="pill-btn active" data-time="30">30s</button>
+            <button class="pill-btn" data-time="60">60s</button>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center">
+          <span class="group-label">mode</span>
+          <div class="pill-group" id="diff-group">
+            <button class="pill-btn active" data-diff="easy">easy</button>
+            <button class="pill-btn" data-diff="medium">medium</button>
+            <button class="pill-btn" data-diff="hard">hard</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span class="stat-label">WPM</span>
+          <span class="stat-value" id="live-wpm">——</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Accuracy</span>
+          <span class="stat-value" id="live-acc">——</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Correct</span>
+          <span class="stat-value" id="live-correct">00</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Errors</span>
+          <span class="stat-value" id="live-errors">00</span>
+        </div>
+        <div class="timer-wrap">
+          <svg class="timer-svg" width="64" height="64" viewBox="0 0 64 64">
+            <circle class="timer-track" cx="32" cy="32" r="28" />
+            <circle class="timer-arc" cx="32" cy="32" r="28" id="timer-arc" />
+          </svg>
+          <div class="timer-text" id="timer-display">30</div>
+        </div>
+      </div>
+
+      <!-- Typing Area -->
+      <div id="typing-area" tabindex="0" role="textbox" aria-label="Typing area">
+        <input id="hidden-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+
+        <!-- Loading overlay -->
+        <div id="loading-overlay">
+          <div class="spinner"></div>
+          <span class="loading-text" id="loading-text">fetching words…</span>
+        </div>
+
+        <!-- API error overlay -->
+        <div id="api-error" class="hidden">
+          <span class="error-icon">⚠</span>
+          <span class="error-msg" id="error-msg">Could not load words.<br />Check your connection.</span>
+          <button class="retry-btn-small" id="retry-btn">retry</button>
+        </div>
+
+        <div id="word-display"></div>
+        <div class="focus-hint">click to focus &amp; start typing</div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls-row">
+        <span class="hint-text"><kbd>Tab</kbd> + <kbd>Enter</kbd> to restart</span>
+        <button class="btn primary" id="restart-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10" />
+            <path d="M3.51 15a9 9 0 1 0 .49-4.95" />
+          </svg>
+          Restart
+        </button>
+      </div>
+      <footer class="page-footer">Developed by Mehedi Hasaan • <a href="https://www.linkedin.com/in/mehedi-hasan-9417061a5/" target="_blank" rel="noopener">LinkedIn</a></footer>
+    </div>
+
+    <!-- Results Overlay -->
+    <div id="results-overlay">
+      <div class="results-card">
+        <div class="results-title">Test Complete</div>
+        <div class="new-pb-banner" id="new-pb-banner">🏆 New Personal Best!</div>
+        <div class="results-grid">
+          <div class="result-box highlight">
+            <div class="label">WPM</div>
+            <div class="value" id="final-wpm">0</div>
+            <div class="unit">words / min</div>
+          </div>
+          <div class="result-box">
+            <div class="label">Accuracy</div>
+            <div class="value" id="final-acc">0%</div>
+            <div class="unit">correct keystrokes</div>
+          </div>
+          <div class="result-box">
+            <div class="label">Correct</div>
+            <div class="value" id="final-correct">0</div>
+            <div class="unit">characters</div>
+          </div>
+          <div class="result-box">
+            <div class="label">Errors</div>
+            <div class="value" id="final-errors">0</div>
+            <div class="unit">mistakes</div>
+          </div>
+        </div>
+        <button class="btn primary" id="results-restart-btn" style="width: 100%; justify-content: center; padding: 0.7rem">Try Again</button>
+      </div>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>
